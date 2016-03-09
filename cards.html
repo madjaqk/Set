@@ -9,8 +9,6 @@
 		margin: 10px;
 		height: 200px;
 		width: 200px;
-		text-align: center;
-		vertical-align: center;
 		background-color: white;
 	}
 
@@ -32,8 +30,6 @@
 <script type="text/javascript">
 	var deck = new DeckConstructor()
 	var visibleCards = 0
-	// shown_cards = []
-	// shown_cards.push(deck.deal())
 
 	function reset(){
 		maybeSet = []
@@ -51,7 +47,13 @@
 			$("#"+revealCardCounter).show()
 			revealCardCounter++
 			visibleCards++
-			delay = Math.max(500, (visibleCards - 12)*1000)
+			if(visibleCards <= 6) { 
+				delay = 500 
+			} else if(visibleCards <= 12) {
+				delay = 1000
+			} else {
+				delay = (visibleCards - 12) * 1000
+			}
 			interval = setInterval(showNextCard, delay)
 			if(revealCardCounter >= deck.cards.length){
 				clearInterval(interval)
