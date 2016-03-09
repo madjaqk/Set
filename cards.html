@@ -36,11 +36,13 @@
 	// shown_cards.push(deck.deal())
 
 	function reset(){
+		maybeSet = []
 		$("#start").html("<h2>Reset</h2>")
 		$(".card").hide()
 		dealCards()
 		var revealCardCounter = 0
 		for(revealCardCounter = 0; revealCardCounter < 12; revealCardCounter++){
+			$("#"+revealCardCounter).css("background-color", "white")
 			$("#"+revealCardCounter).show()
 		}
 		console.log(revealCardCounter)
@@ -50,6 +52,7 @@
 
 		var showNextCard = function(){
 			clearInterval(interval)
+			$("#"+revealCardCounter).css("background-color", "white")
 			$("#"+revealCardCounter).show()
 			revealCardCounter++
 			visibleCards++
@@ -140,6 +143,9 @@
 					}
 					maybeSet = []
 				}
+			} else {
+				maybeSet.splice($.inArray(newCard, maybeSet),1)
+				$(this).css("background-color", "white")
 			}
 		});
 
