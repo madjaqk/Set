@@ -2,47 +2,33 @@
 <style type="text/css">
 	div.card{
 		display: inline-block;
-		border: 2px solid black;
 		padding: 1px;
 		margin: 2px;
-		height: 20px;
-		width: 35px;
+		height: 200px;
+		width: 200px;
 		text-align: center;
 		vertical-align: center;
+		background-color: white;
 	}
 
-	.red{
-		color: red;
-		border: 2px solid red;
-	}
-	h4{
-		margin: 0px;
+	svg{
+		border: 2px solid black;
 	}
 
 </style>
+<script src="bower_components/jquery/dist/jquery.js"></script>
 <script src="deck_of_cards.js"></script>
 
 <body>
 
-<p id="cards"></p>
-
-<h1>Dealer:</h1>
-
-<p id="dealer"></p>
+<div id="main"></div>
 
 
-<h1>Your hand:</h1>
-
-<p id="hand"></p>
-
-<h4 id="hit">Hit me!</h4>
-<h4 id="stand">Stand</h4>
-<div id="results">&nbsp;</div>
-<h4 id="reset">Reset</h4>
 
 <script type="text/javascript">
 	var deck = new DeckConstructor()
-	reset()
+	shown_cards = []
+	// shown_cards.push(deck.deal())
 
 	function reset(){
 		deck.shuffle()
@@ -52,104 +38,86 @@
 		document.getElementById("results").innerHTML = "&nbsp;"
 	}
 
-	function scoreHand(hand){
-		var face = ["K", "Q", "J"]
-		var ace = 0;
-		var score = 0
-		for(var card=0; card < hand.length; card++){
-			if(face.indexOf(hand[card].rank) > -1){
-				score += 10
-			} else if(hand[card].rank == "A") {
-				score += 11
-				ace++
-			} else {
-				score += hand[card].rank
+	function checkSet(card_array){
+		if(!((card_array[0].number==card_array[1].number&&card_array[1].number==card_array[2].number)||(card_array[0].number!=card_array[1].number&&card_array[0].number!=card_array[2].number&&card_array[1].number!=card_array[2].number))) {
+			return false
+		}
+		if(!((card_array[0].color==card_array[1].color&&card_array[1].color==card_array[2].color)||(card_array[0].color!=card_array[1].color&&card_array[0].color!=card_array[2].color&&card_array[1].color!=card_array[2].color))) {
+			return false
+		}
+		if(!((card_array[0].shape==card_array[1].shape&&card_array[1].shape==card_array[2].shape)||(card_array[0].shape!=card_array[1].shape&&card_array[0].shape!=card_array[2].shape&&card_array[1].shape!=card_array[2].shape))) {
+			return false
+		}
+		if(!((card_array[0].border==card_array[1].border&&card_array[1].border==card_array[2].border)||(card_array[0].border!=card_array[1].border&&card_array[0].border!=card_array[2].border&&card_array[1].border!=card_array[2].border))) {
+			return false
+		}
+
+		return true
+	}
+
+	$(document).ready(function(){
+		for(var div_count = 0; div_count < 81; div_count++){
+			$("#main").append(`<div class="card" id="${div_count}"></div>`)
+		}
+
+		var shape = ["ellipse", "rect", "polygon"]
+		var color = ['fill="red"', 'fill="lightblue"', 'fill="green"']
+		var border = ['stroke="none"', 'stroke="black" stroke-width="10"', 'stroke="purple" stroke-width="10" stroke-dasharray="5,5"']
+		var coords = {
+			"01": ['cx="100" cy="100" rx="75" ry="25"'],
+			"02": ['cx="100" cy="70" rx="75" ry="25"', 'cx="100" cy="130" rx="75" ry="25"'],
+			"03": ['cx="100" cy="35" rx="75" ry="25"', 'cx="100" cy="100" rx="75" ry="25"', 'cx="100" cy="165" rx="75" ry="25"'],
+			"11": ['width="50" height="100" x="75" y="50"'],
+			"12": ['width="50" height="100" x="40" y="50"', 'width="50" height="100" x="110" y="50"'],
+			"13": ['width="50" height="100" x="10" y="50"', 'width="50" height="100" x="75" y="50"', 'width="50" height="100" x="140" y="50"'],
+			"21": ['points="100,150 60,50 140,50"'],
+			"22": ['points="50,50 10,150 90,150"', 'points="150,50 110,150 190,150"'],
+			"23": ['points="100,110 60,10 140,10"', 'points="50,90 10,190 90,190"', 'points="150,90 110,190 190,190"']
+		}
+
+		deck.shuffle()
+
+		for(card_count=0; card_count < 81; card_count++){
+			card = deck.cards[card_count]
+			html_str = "<svg width='200' height='200'>"
+			for(var i = 0; i < card.number; i++){
+				html_str += `<${shape[card.shape]} ${coords["" + card.shape + card.number][i]} ${color[card.color]} ${border[card.border]}></${shape[card.shape]}>`
 			}
+			html_str += "</svg>"
+			$("#"+card_count).html(html_str)
 		}
 
-		while(score > 21 && ace > 0){
-			score -= 10;
-			ace--;
-		}
+		var maybeSet = []
 
-		if(score > 21){ score = -1}
-
-		return {"score": score, "aces": ace}
-	}
-
-	function displayCards(set_of_cards, elementID){
-		document.getElementById(elementID).innerHTML = ""
-		for(var card_count=0; card_count < set_of_cards.length; card_count++){
-			var card = set_of_cards[card_count]
-			document.getElementById(elementID).innerHTML += `<div class='card ${card.color}'>` + card.rank + card.suit + "</div>"
-		}
-	}
-
-	function showCards(){
-		//displayCards(deck.cards, "cards")
-		displayCards(dealer, "dealer")
-		if(dealer.length == 1){
-			document.getElementById("dealer").innerHTML += "<div class='card'>?</div>"
-		}
-
-		displayCards(hand, "hand")
-
-		score = scoreHand(hand).score
-		if(score == -1){
-			document.getElementById("hand").innerHTML += "(Bust!)"
-			dealer.push(deck.deal())
-			displayCards(dealer, "dealer")
-			document.getElementById("results").innerHTML = "Dealer wins!"
-		} else {
-			document.getElementById("hand").innerHTML += "(" + score + " points)"
-		}
-
-		if(score == 21){ stand() }
-
-	}
-
-	function stand(){
-		function give_dealer_a_card(){
-			dealer.push(deck.deal() );
-			displayCards(dealer, "dealer")
-			score = scoreHand(dealer);
-			console.log(score)
-			if(score.score == -1 || score.score - score.aces*.1 > 17){
-				clearInterval(dealer_timer)
-				if(score.score == -1){
-					document.getElementById("dealer").innerHTML += "(Bust!)"
-					document.getElementById("results").innerHTML = "Player wins!"
-				} else {
-					document.getElementById("dealer").innerHTML += "(" + score.score + " points)"
-					player_score = scoreHand(hand).score
-					if(score.score > player_score){
-						document.getElementById("results").innerHTML = "Dealer wins!"
-					} else if (score.score < player_score){
-						document.getElementById("results").innerHTML = "Player wins!"
+		$("#main").on("click", ".card", function(e){
+			newCard = $(this).attr("id")
+			if($.inArray(newCard, maybeSet)==-1){
+				maybeSet.push(newCard)
+				$(this).css("background-color", "grey")
+				if(maybeSet.length==3){
+					maybeSetCards = [deck.cards[maybeSet[0]],deck.cards[maybeSet[1]],deck.cards[maybeSet[2]]]
+					if(checkSet(maybeSetCards)){
+						for(var maybeSetCounter = 0; maybeSetCounter < maybeSet.length; maybeSetCounter++){
+							$("#"+maybeSet[maybeSetCounter]).hide()
+						}
+						$("body").css("background-color","lightblue")
+						setTimeout(function() { $("body").css("background-color","white")}, 250)
 					} else {
-						document.getElementById("results").innerHTML = "Push!"
+						for(var maybeSetCounter = 0; maybeSetCounter < maybeSet.length; maybeSetCounter++){
+							$("#"+maybeSet[maybeSetCounter]).css("background-color", "white")
+						}
+						$("body").css("background-color","red")
+						setTimeout(function() { $("body").css("background-color","white")}, 250)
 					}
+					maybeSet = []
 				}
 			}
-		}
-		var dealer_timer = setInterval(give_dealer_a_card, 250)
+		});
+	});
 
-		if(score.score - score.aces*.1 < 17){ clearInterval(dealer_timer) }
-		showCards()
-	}
 
-	document.getElementById("hit").onclick = function(){
-		hand.push(deck.deal());
-		showCards();
-	}
 
-	document.getElementById("stand").onclick = function(){
-		stand()
-	}
 
-	document.getElementById("reset").onclick = function(){
-		reset()
-	}
 </script>
 
 </body>

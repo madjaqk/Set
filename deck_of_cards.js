@@ -1,14 +1,13 @@
 function DeckConstructor(){
 	this.make_all_cards = function(){
 		all_cards = []
-		suits = ["&hearts;", "&diams;", "&spades;", "&clubs;"]
-		ranks = ["A",2,3,4,5,6,7,8,9,10,"J","Q","K"]
-		for(var suit_count = 0; suit_count < suits.length; suit_count ++){
-			for(var rank_count = 0; rank_count < ranks.length; rank_count++){
-				card = {"suit": suits[suit_count], "rank": ranks[rank_count]}
-				suit_count <= 1 ? card.color = "red" : card.color = "black"
-				all_cards.push(card)
-			}
+		for(var count = 0; count < 81; count ++){
+			card = {}
+			card.number = count % 3 + 1
+			card.color = Math.floor(count/3) % 3
+			card.shape = Math.floor(count/9) % 3
+			card.border = Math.floor(count/27) % 3
+			all_cards.push(card)
 		}
 		this.cards = all_cards
 	}
@@ -29,3 +28,5 @@ function DeckConstructor(){
 
 	this.deal = function() { return this.cards.pop() }
 }
+
+deck = new DeckConstructor()
