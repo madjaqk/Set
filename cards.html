@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<style type="text/css">
+	div.card{
+		display: inline-block;
+		border: 2px solid black;
+		padding: 1px;
+		margin: 2px;
+		height: 20px;
+		width: 35px;
+		text-align: center;
+		vertical-align: center;
+	}
+
+	.red{
+		color: red;
+		border: 2px solid red;
+	}
+	h4{
+		margin: 0px;
+	}
+
+</style>
+<script src="deck_of_cards.js"></script>
+
+<body>
+
+<p id="cards"></p>
+
+<h1>Dealer:</h1>
+
+<p id="dealer"></p>
+
+
+<h1>Your hand:</h1>
+
+<p id="hand"></p>
+
+<h4 id="hit">Hit me!</h4>
+<h4 id="stand">Stand</h4>
+<div id="results">&nbsp;</div>
+<h4 id="reset">Reset</h4>
+
+<script type="text/javascript">
+	var deck = new DeckConstructor()
+	reset()
+
+	function reset(){
+		deck.shuffle()
+		hand = [deck.deal(), deck.deal()]
+		dealer = [deck.deal()]
+		showCards()
+		document.getElementById("results").innerHTML = "&nbsp;"
+	}
+
+	function scoreHand(hand){
+		var face = ["K", "Q", "J"]
+		var ace = 0;
+		var score = 0
+		for(var card=0; card < hand.length; card++){
+			if(face.indexOf(hand[card].rank) > -1){
+				score += 10
+			} else if(hand[card].rank == "A") {
+				score += 11
+				ace++
+			} else {
+				score += hand[card].rank
+			}
+		}
+
+		while(score > 21 && ace > 0){
+			score -= 10;
+			ace--;
+		}
+
+		if(score > 21){ score = -1}
+
+		return {"score": score, "aces": ace}
+	}
+
+	function displayCards(set_of_cards, elementID){
+		document.getElementById(elementID).innerHTML = ""
+		for(var card_count=0; card_count < set_of_cards.length; card_count++){
+			var card = set_of_cards[card_count]
+			document.getElementById(elementID).innerHTML += `<div class='card ${card.color}'>` + card.rank + card.suit + "</div>"
+		}
+	}
+
+	function showCards(){
+		//displayCards(deck.cards, "cards")
+		displayCards(dealer, "dealer")
+		if(dealer.length == 1){
+			document.getElementById("dealer").innerHTML += "<div class='card'>?</div>"
+		}
+
+		displayCards(hand, "hand")
+
+		score = scoreHand(hand).score
+		if(score == -1){
+			document.getElementById("hand").innerHTML += "(Bust!)"
+			dealer.push(deck.deal())
+			displayCards(dealer, "dealer")
+			document.getElementById("results").innerHTML = "Dealer wins!"
+		} else {
+			document.getElementById("hand").innerHTML += "(" + score + " points)"
+		}
+
+		if(score == 21){ stand() }
+
+	}
+
+	function stand(){
+		function give_dealer_a_card(){
+			dealer.push(deck.deal() );
+			displayCards(dealer, "dealer")
+			score = scoreHand(dealer);
+			console.log(score)
+			if(score.score == -1 || score.score - score.aces*.1 > 17){
+				clearInterval(dealer_timer)
+				if(score.score == -1){
+					document.getElementById("dealer").innerHTML += "(Bust!)"
+					document.getElementById("results").innerHTML = "Player wins!"
+				} else {
+					document.getElementById("dealer").innerHTML += "(" + score.score + " points)"
+					player_score = scoreHand(hand).score
+					if(score.score > player_score){
+						document.getElementById("results").innerHTML = "Dealer wins!"
+					} else if (score.score < player_score){
+						document.getElementById("results").innerHTML = "Player wins!"
+					} else {
+						document.getElementById("results").innerHTML = "Push!"
+					}
+				}
+			}
+		}
+		var dealer_timer = setInterval(give_dealer_a_card, 250)
+
+		if(score.score - score.aces*.1 < 17){ clearInterval(dealer_timer) }
+		showCards()
+	}
+
+	document.getElementById("hit").onclick = function(){
+		hand.push(deck.deal());
+		showCards();
+	}
+
+	document.getElementById("stand").onclick = function(){
+		stand()
+	}
+
+	document.getElementById("reset").onclick = function(){
+		reset()
+	}
+</script>
+
+</body>
