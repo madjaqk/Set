@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <style type="text/css">
+	div#start{
+		text-align: center;
+	}
 	div.card{
 		display: inline-block;
 		padding: 1px;
-		margin: 2px;
+		margin: 10px;
 		height: 200px;
 		width: 200px;
 		text-align: center;
@@ -21,21 +24,32 @@
 
 <body>
 
+<div id="start"><h2>Start</h2></div>
 <div id="main"></div>
 
 
 
 <script type="text/javascript">
 	var deck = new DeckConstructor()
-	shown_cards = []
+	// shown_cards = []
 	// shown_cards.push(deck.deal())
 
 	function reset(){
-		deck.shuffle()
-		hand = [deck.deal(), deck.deal()]
-		dealer = [deck.deal()]
-		showCards()
-		document.getElementById("results").innerHTML = "&nbsp;"
+		$("#start").html("<h2>Reset</h2>")
+		$(".card").hide()
+		dealCards()
+		var revealCardCounter = 0
+		for(revealCardCounter = 0; revealCardCounter < 12; revealCardCounter++){
+			$("#"+revealCardCounter).show()
+		}
+		console.log(revealCardCounter)
+		revealingCards = setInterval(function() {
+			$("#"+revealCardCounter).show()
+			revealCardCounter++
+			if(revealCardCounter >= deck.cards.length){
+				clearInterval(revealingCards)
+			}
+		}, 100);
 	}
 
 	function checkSet(card_array){
@@ -55,11 +69,7 @@
 		return true
 	}
 
-	$(document).ready(function(){
-		for(var div_count = 0; div_count < 81; div_count++){
-			$("#main").append(`<div class="card" id="${div_count}"></div>`)
-		}
-
+	function dealCards(){
 		var shape = ["ellipse", "rect", "polygon"]
 		var color = ['fill="red"', 'fill="lightblue"', 'fill="green"']
 		var border = ['stroke="none"', 'stroke="black" stroke-width="10"', 'stroke="purple" stroke-width="10" stroke-dasharray="5,5"']
@@ -77,7 +87,7 @@
 
 		deck.shuffle()
 
-		for(card_count=0; card_count < 81; card_count++){
+		for(var card_count=0; card_count < 81; card_count++){
 			card = deck.cards[card_count]
 			html_str = "<svg width='200' height='200'>"
 			for(var i = 0; i < card.number; i++){
@@ -86,10 +96,18 @@
 			html_str += "</svg>"
 			$("#"+card_count).html(html_str)
 		}
+	}
+
+	$(document).ready(function(){
+		for(var div_count = 0; div_count < 81; div_count++){
+			$("#main").append(`<div class="card" id="${div_count}"></div>`)
+		}
+
+		// dealCards()
 
 		var maybeSet = []
 
-		$("#main").on("click", ".card", function(e){
+		$("#main").on("click", ".card", function(){
 			newCard = $(this).attr("id")
 			if($.inArray(newCard, maybeSet)==-1){
 				maybeSet.push(newCard)
@@ -100,7 +118,7 @@
 						for(var maybeSetCounter = 0; maybeSetCounter < maybeSet.length; maybeSetCounter++){
 							$("#"+maybeSet[maybeSetCounter]).hide()
 						}
-						$("body").css("background-color","lightblue")
+						$("body").css("background-color","blue")
 						setTimeout(function() { $("body").css("background-color","white")}, 250)
 					} else {
 						for(var maybeSetCounter = 0; maybeSetCounter < maybeSet.length; maybeSetCounter++){
@@ -113,6 +131,10 @@
 				}
 			}
 		});
+
+		$("#start").click( function(){
+			reset()
+		})
 	});
 
 
