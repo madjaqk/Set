@@ -31,6 +31,7 @@
 
 <script type="text/javascript">
 	var deck = new DeckConstructor()
+	var visibleCards = 0
 	// shown_cards = []
 	// shown_cards.push(deck.deal())
 
@@ -43,13 +44,22 @@
 			$("#"+revealCardCounter).show()
 		}
 		console.log(revealCardCounter)
-		revealingCards = setInterval(function() {
+		
+		visibleCards = 12
+		delay = 1000
+
+		var showNextCard = function(){
+			clearInterval(interval)
 			$("#"+revealCardCounter).show()
 			revealCardCounter++
+			visibleCards++
+			delay = Math.max(500, (visibleCards - 12)*1000)
+			interval = setInterval(showNextCard, delay)
 			if(revealCardCounter >= deck.cards.length){
-				clearInterval(revealingCards)
+				clearInterval(interval)
 			}
-		}, 100);
+		}
+		interval = setInterval(showNextCard, delay)
 	}
 
 	function checkSet(card_array){
@@ -118,6 +128,7 @@
 						for(var maybeSetCounter = 0; maybeSetCounter < maybeSet.length; maybeSetCounter++){
 							$("#"+maybeSet[maybeSetCounter]).hide()
 						}
+						visibleCards -= 3
 						$("body").css("background-color","blue")
 						setTimeout(function() { $("body").css("background-color","white")}, 250)
 					} else {
