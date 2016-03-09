@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <style type="text/css">
-	div#start{
+	h2{
 		text-align: center;
+	}
+
+	div#instructions{
+		display: none;
 	}
 	div.card{
 		display: inline-block;
@@ -22,6 +26,76 @@
 
 <body>
 
+<div id="show_instructions">
+	<h2>Instructions?</h2>
+	<div id="instructions">
+		<p>Per <a href="https://en.wikipedia.org/wiki/Set_(game)">Wikipedia</a>: A <b>set</b> consists of three cards which satisfy all of these conditions:</p>
+
+		<ul><li>They all have the same number, or they have three different numbers.</li>
+			<li>They all have the same symbol, or they have three different symbols.</li>
+			<li>They all have the same border, or they have three different border.</li>
+			<li>They all have the same color, or they have three different colors.</li>
+		</ul>
+
+		<p>The rules of Set are summarized by: If you can sort a group of three cards into "Two of ____ and one of _____," then it is not a set.</p>
+
+		<h3>Valid set:</h3>
+		<div class="card">
+			<svg width='200' height='200'>
+				<polygon points="100,150 60,50 140,50" fill="lightblue" stroke="none"></polygon>
+			</svg>
+		</div>
+		<div class="card">
+			<svg width='200' height='200'>
+				<polygon points="50,50 10,150 90,150" fill="lightblue" stroke="none"></polygon>
+				<polygon points="150,50 110,150 190,150" fill="lightblue" stroke="none"></polygon>
+			</svg>
+		</div>
+		<div class="card">
+			<svg width='200' height='200'>
+				<polygon points="100,110 60,10 140,10" fill="lightblue" stroke="none"></polygon>
+				<polygon points="50,90 10,190 90,190" fill="lightblue" stroke="none"></polygon>
+				<polygon points="150,90 110,190 190,190" fill="lightblue" stroke="none"></polygon>
+			</svg>
+		</div>
+
+		<h3>Valid set:</h3>
+		<div class="card">
+			<svg width='200' height='200'>
+				<ellipse cx="100" cy="100" rx="75" ry="25" fill="red" stroke="none"></ellipse>
+			</svg>
+		</div>
+		<div class="card">
+			<svg width='200' height='200'>
+				<rect width="50" height="100" x="75" y="50" fill="lightblue" stroke="black" stroke-width="10"></rect>
+			</svg>
+		</div>
+		<div class="card">
+			<svg width='200' height='200'>
+				<polygon points="100,150 60,50 140,50" fill="green" stroke="purple" stroke-width="10" stroke-dasharray="5,5"></polygon>
+			</svg>
+		</div>
+
+		<h3>Invalid set:</h3>
+		<div class="card">
+			<svg width='200' height='200'>
+				<ellipse cx="100" cy="70" rx="75" ry="25" fill="red" stroke="none"></ellipse>
+				<ellipse cx="100" cy="130" rx="75" ry="25" fill="red" stroke="none"></ellipse>
+			</svg>
+		</div>
+		<div class="card">
+			<svg width='200' height='200'>
+				<rect width="50" height="100" x="75" y="50" fill="red" stroke="black" stroke-width="10"></rect>
+			</svg>
+		</div>
+		<div class="card">
+			<svg width='200' height='200'>
+				<polygon points="100,150 60,50 140,50" fill="green" stroke="none"></polygon>
+			</svg>
+		</div>
+
+	</div>
+</div>
 <div id="start"><h2>Start</h2></div>
 <div id="main"></div>
 
@@ -148,6 +222,10 @@
 
 		$("#start").click( function(){
 			reset()
+		})
+
+		$("#show_instructions").click( function() {
+			$("#instructions").slideToggle()
 		})
 	});
 
