@@ -23,6 +23,10 @@
 		border: 2px solid black;
 	}
 
+	div#main div.card{
+		background-color: #F4D6AE;
+	}
+
 </style>
 <script src="bower_components/jquery/dist/jquery.js"></script>
 <script src="deck_of_cards.js"></script>
@@ -107,8 +111,10 @@
 <script type="text/javascript">
 	var deck = new DeckConstructor()
 	var visibleCards = 0
+	var going = false
 
 	function reset(){
+		going = true
 		maybeSet = []
 		$("#start").html("<h2>Reset</h2>")
 		$("#main .card").hide()
@@ -195,6 +201,7 @@
 		var maybeSet = []
 
 		$("#main").on("click", ".card", function(){
+			if(!going){ return false }
 			newCard = $(this).attr("id")
 			if($.inArray(newCard, maybeSet)==-1){
 				maybeSet.push(newCard)
@@ -207,13 +214,13 @@
 						}
 						visibleCards -= 3
 						$("body").css("background-color","blue")
-						setTimeout(function() { $("body").css("background-color","white")}, 250)
+						setTimeout(function() { $("body").css("background-color","#F4D6AE")}, 250)
 					} else {
 						for(var maybeSetCounter = 0; maybeSetCounter < maybeSet.length; maybeSetCounter++){
 							$("#"+maybeSet[maybeSetCounter]).css("background-color", "white")
 						}
 						$("body").css("background-color","red")
-						setTimeout(function() { $("body").css("background-color","white")}, 250)
+						setTimeout(function() { $("body").css("background-color","#F4D6AE")}, 250)
 					}
 					maybeSet = []
 				}
